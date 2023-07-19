@@ -90,7 +90,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						// 隐藏模态窗口
 						$("#createActivityModal").modal("hide");
 						// 刷新市场活动列表，显示第一页数据，保持每页显示条数不变
-
+						queryActivityByConditionForPage(1, $("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
 					} else {
 						// 提示信息
 						alert(data.message);
@@ -120,9 +120,25 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 		// 给查询按钮添加单击事件
 		$("#queryActivityBtn").click(function(){
-			queryActivityByConditionForPage(1, 10);
+			queryActivityByConditionForPage(1, $("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
 		});
+
+		// 给全选按钮添加单击事件
+		$("#checkAll").click(function(){
+			$("#tBody input[type='checkbox']").prop("checked", this.checked);
+		});
+
 	});
+
+
+	$("#tBody").on("click", input[type='checkbox'], function(){
+		if($("#tBody input[type='checkbox']").size==$("#tBody input[type='checkbox']:checked")) {
+			$("#checkAll").prop("checked", true);
+		} else {
+			$("#checkAll").prop("checked", false);
+		}
+	});
+
 
 
 	// 封装函数要在入口函数外面封装，不能在里面
@@ -173,6 +189,9 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				});
 
 				$("#tBody").html(htmlStr);
+
+				// 在这里取消全选按钮，因为每次查询到新的页面，默认是没有选中任何数据条目的
+				$("#checkAll").prop("checked", false);
 
 
 				// 计算总页数
@@ -441,7 +460,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="checkAll"/></td>
 							<td>名称</td>
                             <td>所有者</td>
 							<td>开始日期</td>
