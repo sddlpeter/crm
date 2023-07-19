@@ -128,17 +128,15 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			$("#tBody input[type='checkbox']").prop("checked", this.checked);
 		});
 
+		// 全选按钮联动，如果子选项全部被选中，那么全选按钮自动被选中
+		$("#tBody").on("click", "input[type='checkbox']", function(){
+			if($("#tBody input[type='checkbox']").size()==$("#tBody input[type='checkbox']:checked").size()) {
+				$("#checkAll").prop("checked", true);
+			} else {
+				$("#checkAll").prop("checked", false);
+			}
+		});
 	});
-
-
-	$("#tBody").on("click", input[type='checkbox'], function(){
-		if($("#tBody input[type='checkbox']").size==$("#tBody input[type='checkbox']:checked")) {
-			$("#checkAll").prop("checked", true);
-		} else {
-			$("#checkAll").prop("checked", false);
-		}
-	});
-
 
 
 	// 封装函数要在入口函数外面封装，不能在里面
