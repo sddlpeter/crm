@@ -54,4 +54,5 @@ public interface ActivityMapper {
     int insertActivity(Activity activity);
     List<Activity> selectActivityByConditionForPage(Map<String, Object> map);
     int selectCountOfActivityByCondition(Map<String, Object> map);
+    int deleteActivityByIds(String[] ids);
 }
