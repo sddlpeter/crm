@@ -84,7 +84,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					description:description
 				},
 				type:'post',
-				dataTYpe:'json',
+				dataType:'json',
 				success:function(data){
 					if(data.code=="1") {
 						// 隐藏模态窗口
