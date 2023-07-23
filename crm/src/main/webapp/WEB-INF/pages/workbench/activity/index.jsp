@@ -247,7 +247,12 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					}
 				}
 			})
+		});
 
+
+		// 入口函数内: 给"批量导出"按钮，添加单击事件
+		$("#exportActivityAllBtn").click(function(){
+			window.location.href="workbench/activity/exportAllActivities.do";
 		});
 	});
 

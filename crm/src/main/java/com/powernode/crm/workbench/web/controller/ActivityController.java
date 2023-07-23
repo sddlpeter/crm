@@ -8,15 +8,26 @@ import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.settings.service.UserService;
 import com.powernode.crm.workbench.domain.Activity;
 import com.powernode.crm.workbench.service.ActivityService;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.ExcelGeneralNumberFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 
 @Controller
@@ -142,8 +153,146 @@ public class ActivityController {
         } catch (Exception e) {
             returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
             returnObject.setMessage("系统忙，请稍后再试...");
+            e.printStackTrace();
         }
 
         return returnObject;
     }
+
+    @RequestMapping("/workbench/activity/fileDownload.do")
+    public void fileDownload(HttpServletResponse response) throws Exception {
+        // 返回excel文件
+
+        //1. 设置响应类型
+        //response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/octet-stream;charset=UTF-8");
+
+        //2. 获取输出流
+        // PrintWriter writer = response.getWriter(); // 字符流
+        ServletOutputStream outputStream = response.getOutputStream(); // 字节流
+
+
+        // 浏览器默认是直接在显示窗口中打开文件，只有实在打不开，才会激活下载功能
+        // 可以设置响应头信息，使浏览器接收到响应信息之后，直接激活文件下载窗口
+        response.addHeader("Content-Disposition", "attachment;filename=studentList.xls");
+
+
+        //3. 获取输入流，读取磁盘文件
+        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\Admin\\Documents\\Student\\stu.xls");
+        byte[] buffer = new byte[256];
+        int len = 0;
+
+        //4. 一边读取文件，一边写出文件，读完了也写完了
+        while ((len=fileInputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, len);
+        }
+
+        //5. 关闭资源
+        fileInputStream.close();
+        outputStream.flush();
+    }
+
+    @RequestMapping("/workbench/activity/exportAllActivities.do")
+    public void exportAllActivities(HttpServletResponse response) throws Exception {
+        List<Activity> activityList = activityService.queryAllActivities();
+        HSSFWorkbook wb = new HSSFWorkbook();
+        HSSFSheet sheet = wb.createSheet("市场活动列表");
+        HSSFRow row = sheet.createRow(0);
+        HSSFCell cell = row.createCell(0);
+        cell.setCellValue("ID");
+        cell = row.createCell(1);
+        cell.setCellValue("所有者");
+        cell = row.createCell(2);
+        cell.setCellValue("名称");
+        cell = row.createCell(3);
+        cell.setCellValue("开始日期");
+        cell = row.createCell(4);
+        cell.setCellValue("结束日期");
+        cell = row.createCell(5);
+        cell.setCellValue("成本");
+        cell = row.createCell(6);
+        cell.setCellValue("描述");
+        cell = row.createCell(7);
+        cell.setCellValue("创建时间");
+        cell = row.createCell(8);
+        cell.setCellValue("创建者");
+        cell = row.createCell(9);
+        cell.setCellValue("修改时间");
+        cell = row.createCell(10);
+        cell.setCellValue("修改者");
+
+        Activity activity;
+
+        if (activityList != null && activityList.size() > 0) {
+            for (int i = 0; i < activityList.size(); i++) {
+                activity = activityList.get(i);
+
+                row = sheet.createRow(i + 1);
+
+                cell = row.createCell(0);
+                cell.setCellValue(activity.getId());
+                cell = row.createCell(1);
+                cell.setCellValue(activity.getOwner());
+                cell = row.createCell(2);
+                cell.setCellValue(activity.getName());
+                cell = row.createCell(3);
+                cell.setCellValue(activity.getStartDate());
+                cell = row.createCell(4);
+                cell.setCellValue(activity.getEndDate());
+                cell = row.createCell(5);
+                cell.setCellValue(activity.getCost());
+                cell = row.createCell(6);
+                cell.setCellValue(activity.getDescription());
+                cell = row.createCell(7);
+                cell.setCellValue(activity.getCreateTime());
+                cell = row.createCell(8);
+                cell.setCellValue(activity.getCreateBy());
+                cell = row.createCell(9);
+                cell.setCellValue(activity.getEditTime());
+                cell = row.createCell(10);
+                cell.setCellValue(activity.getEditBy());
+            }
+        }
+
+
+
+        // -------------- 方法一：先写到磁盘，再将磁盘数据发送到用户的浏览器
+
+        // 这里先把文件保存到web server的目录下
+//        OutputStream os = new FileOutputStream("C:\\Users\\Admin\\Documents\\ServerDir\\activityList.xls");
+//        wb.write(os);
+//
+//        os.close();
+//        wb.close();
+//
+//        // 再把文件下载到用户的电脑
+//        response.setContentType("application/octet-stream;charset=UTF-8");
+//        response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
+//        ServletOutputStream out = response.getOutputStream();
+//        FileInputStream is = new FileInputStream("C:\\Users\\Admin\\Documents\\ServerDir\\activityList.xls");
+//
+//        byte[] buffer = new byte[256];
+//        int len = 0;
+//        while ((len=is.read(buffer)) != -1) {
+//            out.write(buffer, 0, len);
+//        }
+//
+//        is.close();
+//        out.flush();
+
+
+
+        // -------------- 方法二：直接将wb的数据发送给用户的浏览器，从内存到内存，不经过磁盘
+
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
+        ServletOutputStream out = response.getOutputStream();
+
+        wb.write(out);
+
+        wb.close();
+        out.flush();
+
+    }
+
 }

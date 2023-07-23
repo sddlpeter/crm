@@ -57,4 +57,8 @@ public interface ActivityMapper {
     int deleteActivityByIds(String[] ids);
     Activity selectActivityById(String id);
     int updateActivity(Activity activity);
+
+    List<Activity> selectAllActivities();
+
+    int insertActivityByList(List<Activity> activityList);
 }
