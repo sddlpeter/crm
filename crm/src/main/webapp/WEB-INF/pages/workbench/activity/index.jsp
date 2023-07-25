@@ -254,6 +254,48 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 		$("#exportActivityAllBtn").click(function(){
 			window.location.href="workbench/activity/exportAllActivities.do";
 		});
+
+		// 入口函数内: 给"导入"按钮，添加单击事件
+		$("#importActivityBtn").click(function(){
+			// 收集参数
+			var activityFileName=$("#activityFile").val();
+			var suffix=activityFileName.substr(activityFileName.lastIndexOf(".")+1).toLocaleLowerCase();
+			if(suffix!="xls"){
+				alert("只支持.xls文件");
+				return;
+			}
+
+			var activityFile=$("#activityFile")[0].files[0];
+			if(activityFile.size>1024*1024*5){
+				alert("文件大小不能超过5M");
+				return;
+			}
+
+			// FormData 是ajax提供的接口，广义上的接口
+			var formData=new FormData();
+			formData.append("activityFile", activityFile);
+			formData.append("userName", "zhang san");
+
+			// 发送请求
+			$.ajax({
+				url:'workbench/activity/importActivity.do',
+				data:formData,
+				processData:false,
+				contentType:false,
+				type:'post',
+				dataType:'json',
+				success:function(data){
+					if(data.code=="1"){
+						alert("成功导入" + data.retData +"条记录");
+						$("#importActivityModal").modal("hide");
+						queryActivityByConditionForPage(1, $("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
+					} else {
+						alert(data.message);
+						$("#importActivityModal").modal("show");
+					}
+				}
+			})
+		});
 	});
 
 
@@ -296,7 +338,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 					htmlStr+="<tr class=\"active\">";
 					htmlStr+="<td><input type=\"checkbox\" value=\""+obj.id+"\"/></td>";
-					htmlStr+="<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.html';\">"+obj.name+"</a></td>";
+					htmlStr+="<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detailActivity.do?id="+obj.id+"'\">"+obj.name+"</a></td>";
 					htmlStr+="<td>"+obj.owner+"</td>";
 					htmlStr+="<td>"+obj.startDate+"</td>";
 					htmlStr+="<td>"+obj.endDate+"</td>";

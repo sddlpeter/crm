@@ -3,6 +3,7 @@ package com.powernode.crm.workbench.web.controller;
 import com.powernode.crm.commons.constants.Constants;
 import com.powernode.crm.commons.domain.ReturnObject;
 import com.powernode.crm.commons.utils.DateUtils;
+import com.powernode.crm.commons.utils.HSSFUtil;
 import com.powernode.crm.commons.utils.UUIDUtils;
 import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.settings.service.UserService;
@@ -23,11 +24,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 @Controller
@@ -293,6 +292,95 @@ public class ActivityController {
         wb.close();
         out.flush();
 
+    }
+
+    public Object fileUpload(String userName, MultipartFile myFile) throws Exception {
+        System.out.println("userName=" + userName);
+        String originalFilename=myFile.getOriginalFilename();
+        File file = new File("C:\\Users\\Admin\\Documents\\ServerDir", originalFilename);
+        myFile.transferTo(file);
+
+        ReturnObject returnObject = new ReturnObject();
+        returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+        returnObject.setMessage("上传成功");
+        return returnObject;
+    }
+
+
+    @RequestMapping("/workbench/activity/importActivity.do")
+    @ResponseBody
+    public Object importActivity(MultipartFile activityFile, String userName, HttpSession session) {
+        System.out.println(userName);
+
+        User user = (User) session.getAttribute(Constants.SESSION_USER);
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            // 方法一： 把接受的excel文件，先写到server的磁盘，再从磁盘读取成workbook
+            // String originalFilename = activityFile.getOriginalFilename();
+            // File file = new File("C:\\Users\\Admin\\Documents\\ServerDir\\", originalFilename);
+            // activityFile.transferTo(file);
+
+            // 解析excel文件，并封装成activityList
+            // InputStream is = new FileInputStream("C:\\Users\\Admin\\Documents\\ServerDir\\"+ originalFilename);
+            // HSSFWorkbook wb = new HSSFWorkbook(is);
+
+            // 方法2：从内存到内存，从文件直接到workbook
+            InputStream is = activityFile.getInputStream();
+            HSSFWorkbook wb = new HSSFWorkbook(is);
+
+            HSSFSheet sheet = wb.getSheetAt(0);
+
+            HSSFRow row = null;
+            HSSFCell cell = null;
+            Activity activity;
+            List<Activity> activityList = new ArrayList<>();
+
+            for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                row = sheet.getRow(i);
+
+                activity = new Activity();
+                activity.setId(UUIDUtils.getUUID());
+                activity.setOwner(user.getId());
+                activity.setCreateTime(DateUtils.formatDateTime(new Date()));
+                activity.setCreateBy(user.getId());
+
+                for (int j = 0; j < row.getLastCellNum(); j++) {
+                    cell = row.getCell(j);
+                    String cellValue = HSSFUtil.getCellValueForStr(cell);
+                    if (j == 0) {
+                        activity.setName(cellValue);
+                    } else if (j == 1) {
+                        activity.setStartDate(cellValue);
+                    } else if (j == 2) {
+                        activity.setEndDate(cellValue);
+                    } else if (j == 3) {
+                        activity.setCost(cellValue);
+                    } else if (j == 4) {
+                        activity.setDescription(cellValue);
+                    }
+                }
+
+                activityList.add(activity);
+            }
+
+            int ret = activityService.saveCreateActivityListBy(activityList);
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+            returnObject.setRetData(ret);
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙，请稍后再试...");
+        }
+
+        return returnObject;
+    }
+
+
+    @RequestMapping("/workbench/activity/detailActivity.do")
+    public String detailActivity(String id, HttpServletRequest request) {
+        // Activity activityList = activityService.queryActivityForDetailById(id);
+        // List<ActivityRemark>
+        return "";
     }
 
 }
