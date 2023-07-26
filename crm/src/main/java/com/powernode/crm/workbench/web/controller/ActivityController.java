@@ -8,6 +8,8 @@ import com.powernode.crm.commons.utils.UUIDUtils;
 import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.settings.service.UserService;
 import com.powernode.crm.workbench.domain.Activity;
+import com.powernode.crm.workbench.domain.ActivityRemark;
+import com.powernode.crm.workbench.service.ActivityRemarkService;
 import com.powernode.crm.workbench.service.ActivityService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +38,9 @@ public class ActivityController {
 
     @Autowired
     ActivityService activityService;
+
+    @Autowired
+    ActivityRemarkService activityRemarkService;
 
     @RequestMapping("/workbench/activity/index.do")
     public String index(HttpServletRequest request){
@@ -377,10 +382,16 @@ public class ActivityController {
 
 
     @RequestMapping("/workbench/activity/detailActivity.do")
-    public String detailActivity(String id, HttpServletRequest request) {
-        // Activity activityList = activityService.queryActivityForDetailById(id);
-        // List<ActivityRemark>
-        return "";
+    public String detailActivity(String id, HttpServletRequest request){
+        // 调用service层方法
+        Activity activity = activityService.queryActivityForDetailById(id);
+        List<ActivityRemark> activityRemarks = activityRemarkService.queryActivityRemarkForDetailByActivityId(id);
+
+        // 数据保存到request作用域
+        request.setAttribute("activity", activity);
+        request.setAttribute("remarkList", activityRemarks);
+
+        return "workbench/activity/detail";
     }
 
 }

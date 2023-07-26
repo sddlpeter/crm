@@ -54,4 +54,8 @@ public interface ActivityRemarkMapper {
     int updateByPrimaryKey(ActivityRemark record);
 
     List<ActivityRemark> selectActivityRemarkForDetailByActivityId(String activityId);
+    int insertActivityRemark(ActivityRemark remark);
+    int deleteActivityRemarkById(String Id);
+
+    int updateActivityRemark(ActivityRemark remark);
 }
