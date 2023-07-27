@@ -19,7 +19,64 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 <script type="text/javascript">
 
 	$(function(){
-		
+		// 给创建按钮，添加单击事件
+		$("#createClueBtn").click(function(){
+			// 初始化
+			$("#createClueForm")[0].reset();
+			$("#createClueModal").modal("show");
+		});
+
+
+
+		$("#saveCreateClue").click(function(){
+
+			var fullname=$.trim($("#create-fullname").val());
+			var appellation=$("#create-appellation").val();
+			var owner=$.trim($("#create-owner").val());
+			var company=$.trim($("#create-company").val());
+			var job=$.trim($("#create-job").val());
+			var email=$.trim($("#create-email").val());
+			var phone=$.trim($("#create-phone").val());
+			var website=$.trim($("#create-website").val());
+			var mphone=$.trim($("#create-mphone").val());
+			var state=$("#create-state").val();
+			var source=$("#create-source").val();
+			var description=$.trim($("#create-description").val());
+			var contactSummary=$.trim($("#create-contactSummary").val());
+			var nextContactTime=$.trim($("#create-nextContactTime").val());
+			var address=$.trim($("#create-address").val());
+
+			$.ajax({
+				url:'workbench/clue/saveCreateClue.do',
+				data:{
+					fullname:fullname,
+					appellation:appellation,
+					owner:owner,
+					company:company,
+					job:job,
+					email:email,
+					phone:phone,
+					website:website,
+					mphone:mphone,
+					state:state,
+					source:source,
+					description:description,
+					contactSummary:contactSummary,
+					nextContactTime:nextContactTime,
+					address:address
+				},
+				type:'post',
+				dataType:'json',
+				success:function(data){
+					if(data.code=="1"){
+						$("#createClueModal").modal("hide");
+					} else {
+						alert(data.message);
+						$("#createClueModal").modal("show");
+					}
+				}
+			});
+		});
 		
 		
 	});
@@ -39,12 +96,12 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					<h4 class="modal-title" id="myModalLabel">创建线索</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" role="form">
+					<form id="createClueForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
-							<label for="create-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-owner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-clueOwner">
+								<select class="form-control" id="create-owner">
 								  <c:forEach items="${userList}" var="u">
 									  <option value="${u.id}">${u.name}</option>
 								  </c:forEach>
@@ -58,18 +115,18 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						</div>
 						
 						<div class="form-group">
-							<label for="create-call" class="col-sm-2 control-label">称呼</label>
+							<label for="create-appellation" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-call">
+								<select class="form-control" id="create-appellation">
 								  <option></option>
 								  <c:forEach items="${appellationList}" var="app">
 									  <option value="${app.id}">${app.value}</option>
 								  </c:forEach>
 								</select>
 							</div>
-							<label for="create-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-fullname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-surname">
+								<input type="text" class="form-control" id="create-fullname">
 							</div>
 						</div>
 						
@@ -100,11 +157,11 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control" id="create-mphone">
 							</div>
-							<label for="create-status" class="col-sm-2 control-label">线索状态</label>
+							<label for="create-state" class="col-sm-2 control-label">线索状态</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-status">
+								<select class="form-control" id="create-state">
 								  <option></option>
-								  <c:forEach items="clueStateList" var="cs">
+								  <c:forEach items="${clueStateList}" var="cs">
 									  <option value="${cs.id}">${cs.value}</option>
 								  </c:forEach>
 								</select>
@@ -116,7 +173,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-source">
 								  <option></option>
-								  <c:forEach items="sourceList" var="sl">
+								  <c:forEach items="${sourceList}" var="sl">
 									  <option value="${sl.id}">${sl.value}</option>
 								  </c:forEach>
 								</select>
@@ -125,9 +182,9 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						
 
 						<div class="form-group">
-							<label for="create-describe" class="col-sm-2 control-label">线索描述</label>
+							<label for="create-description" class="col-sm-2 control-label">线索描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="create-description"></textarea>
 							</div>
 						</div>
 						
@@ -163,7 +220,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="saveCreateClue">保存</button>
 				</div>
 			</div>
 		</div>
@@ -244,7 +301,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-status">
 								  <option></option>
-									<c:forEach items="clueStateList" var="cs">
+									<c:forEach items="${clueStateList}" var="cs">
 										<option value="${cs.id}">${cs.value}</option>
 									</c:forEach>
 								</select>
@@ -256,7 +313,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
 								  <option></option>
-									<c:forEach items="sourceList" var="sl">
+									<c:forEach items="${sourceList}" var="sl">
 										<option value="${sl.id}">${sl.value}</option>
 									</c:forEach>
 								</select>
@@ -352,7 +409,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				      <div class="input-group-addon">线索来源</div>
 					  <select class="form-control">
 					  	  <option></option>
-						  <c:forEach items="sourceList" var="sl">
+						  <c:forEach items="${sourceList}" var="sl">
 							  <option value="${sl.id}">${sl.value}</option>
 						  </c:forEach>
 					  </select>
@@ -382,7 +439,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				      <div class="input-group-addon">线索状态</div>
 					  <select class="form-control">
 					  	<option></option>
-						  <c:forEach items="clueStateList" var="cs">
+						  <c:forEach items="${clueStateList}" var="cs">
 							  <option value="${cs.id}">${cs.value}</option>
 						  </c:forEach>
 					  </select>
@@ -395,7 +452,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClueModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-primary" id="createClueBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
@@ -419,7 +476,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					<tbody>
 						<tr>
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/detailClue.do?id=c1d33ac1c25e4c8699dbf241128b5275';">张三教授</a></td>
 							<td>动力节点</td>
 							<td>010-84846003</td>
 							<td>12345678901</td>
@@ -429,7 +486,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四先生</a></td>
                             <td>动力节点</td>
                             <td>010-84846003</td>
                             <td>12345678901</td>
