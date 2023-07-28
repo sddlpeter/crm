@@ -10,8 +10,10 @@ import com.powernode.crm.settings.service.DicValueService;
 import com.powernode.crm.settings.service.UserService;
 import com.powernode.crm.workbench.domain.Activity;
 import com.powernode.crm.workbench.domain.Clue;
+import com.powernode.crm.workbench.domain.ClueActivityRelation;
 import com.powernode.crm.workbench.domain.ClueRemark;
 import com.powernode.crm.workbench.service.ActivityService;
+import com.powernode.crm.workbench.service.ClueActivityRelationService;
 import com.powernode.crm.workbench.service.ClueRemarkService;
 import com.powernode.crm.workbench.service.ClueService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class ClueController {
@@ -41,6 +42,9 @@ public class ClueController {
 
     @Autowired
     ActivityService activityService;
+
+    @Autowired
+    ClueActivityRelationService clueActivityRelationService;
 
     @RequestMapping("/workbench/clue/index.do")
     public String index(HttpServletRequest request) {
@@ -102,4 +106,71 @@ public class ClueController {
         // 请求转发
         return "workbench/clue/detail";
     }
+
+    @RequestMapping("/workbench/clue/queryActivityForDetailByNameClueId.do")
+    @ResponseBody
+    public Object queryActivityForDetailByNameClueId(String activityName, String clueId){
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityName", activityName);
+        map.put("clueId", clueId);
+        List<Activity> activityList = activityService.queryActivityForDetailByNameClueId(map);
+        return activityList;
+    }
+
+    @RequestMapping("/workbench/clue/saveBind.do")
+    @ResponseBody
+    public Object saveBind(String[] activityId, String clueId) {
+        ClueActivityRelation car = null;
+        List<ClueActivityRelation> relationList = new ArrayList<>();
+        for (String ai : activityId) {
+            car = new ClueActivityRelation();
+            car.setActivityId(ai);
+            car.setClueId(clueId);
+            car.setId(UUIDUtils.getUUID());
+            relationList.add(car);
+        }
+
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int ret = clueActivityRelationService.saveCreateClueActivityRelationByList(relationList);
+            if (ret>0) {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+
+                List<Activity> activityList = activityService.queryActivityForDetailByIds(activityId);
+                returnObject.setRetData(activityList);
+            } else {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("系统忙，请稍后再试");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙，请稍后再试");
+        }
+
+        return null;
+
+    }
+
+    @RequestMapping("/workbench/clue/saveUnbind.do")
+    @ResponseBody
+    public Object saveUnbind(ClueActivityRelation relation){
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int ret = clueActivityRelationService.deleteClueActivityRelationByClueIdActivityId(relation);
+            if (ret > 0) {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("系统忙，请稍后再试");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙，请稍后再试");
+        }
+
+        return returnObject;
+    }
+
 }
