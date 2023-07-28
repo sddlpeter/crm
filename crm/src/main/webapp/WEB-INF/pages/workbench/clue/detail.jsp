@@ -117,7 +117,6 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				success:function(data) {
 					if(data.code=="1"){
 						$("#bindModal").modal("hide");
-
 						var htmlStr="";
 						$.each(data.retData,function(index,obj){
 							htmlStr+="<tr id=\"tr_"+obj.id+"\">";
@@ -130,6 +129,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						});
 
 						$("#relationTBody").append(htmlStr);
+
 					} else {
 						alert(data.message);
 						$("#bindModal").modal("show");
@@ -139,11 +139,12 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 		});
 
 
-		// 解除绑定
+		// 解除关联
 		$("#relationTBody").on("click","a",function(){
+
 			// this 是dom对象，使用$(this)转成jquery对象
-			var activityId=$(this).attr("activityId");
-			var clueId=${clue.id};
+			let activityId=$(this).attr("activityId");
+			let clueId="${clue.id}";
 
 			if(window.confirm("确定删除吗？")){
 				// 发送请求

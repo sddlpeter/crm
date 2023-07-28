@@ -148,7 +148,7 @@ public class ClueController {
             returnObject.setMessage("系统忙，请稍后再试");
         }
 
-        return null;
+        return returnObject;
 
     }
 
