@@ -173,4 +173,29 @@ public class ClueController {
         return returnObject;
     }
 
+
+    @RequestMapping("/workbench/clue/toConvert.do")
+    public String toConvert(String id, HttpServletRequest request) {
+        Clue clue = clueService.queryClueForDetailById(id);
+        List<DicValue> stageList = dicValueService.queryDicValueByTypeCode("stage");
+        request.setAttribute("clue", clue);
+        request.setAttribute("stageList", stageList);
+        return "workbench/clue/convert";
+    }
+
+
+    @RequestMapping("/workbench/clue/queryActivityForConvertByNameClueId.do")
+    @ResponseBody
+    public Object queryActivityForConvertByNameClueId(String activityName, String clueId){
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityName", activityName);
+        map.put("clueId", clueId);
+
+        List<Activity> activityList = activityService.queryActivityForConvertByNameClueId(map);
+
+        // 返回类型虽然是object，但是这里的List<Activity>可以自动转化成object，向上转型
+        return activityList;
+
+    }
+
 }

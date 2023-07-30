@@ -167,6 +167,13 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			}
 		});
 
+		// 给转换按钮，添加单击事件
+		$("#convertClueBtn").click(function(){
+
+			// 发送同步请求
+			window.location.href="workbench/clue/toConvert.do?id=${clue.id}";
+		});
+
 	});
 	
 </script>
@@ -242,7 +249,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			<h3>${clue.fullname}${clue.appellation} <small>${clue.company}</small></h3>
 		</div>
 		<div style="position: relative; height: 50px; width: 500px;  top: -72px; left: 700px;">
-			<button type="button" class="btn btn-default" onclick="window.location.href='convert.html';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
+			<button type="button" class="btn btn-default" id="convertClueBtn"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
 			
 		</div>
 	</div>
