@@ -54,4 +54,6 @@ public interface ClueMapper {
     int insertClue(Clue clue);
 
     Clue selectClueForDetailById(String id);
+
+    Clue selectClueById(String id);
 }
