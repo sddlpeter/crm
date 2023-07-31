@@ -128,6 +128,6 @@
   </select>
 
   <delete id="deleteClueActivityRelationByClueId" parameterType="string">
-    delete from tbl_clue_activity_relation wehre clue_id = #{clueId}
+    delete from tbl_clue_activity_relation where clue_id = #{clueId}
   </delete>
 </mapper>
