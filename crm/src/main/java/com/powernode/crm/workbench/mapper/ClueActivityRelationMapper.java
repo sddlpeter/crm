@@ -56,4 +56,8 @@ public interface ClueActivityRelationMapper {
     int insertClueActivityRelationByList(List<ClueActivityRelation> list);
 
     int deleteClueActivityRelationByClueIdActivityId(ClueActivityRelation clueActivityRelation);
+
+    List<ClueActivityRelation> selectClueActivityRelationByClueId(String clueId);
+
+    int deleteClueActivityRelationByClueId(String clueId);
 }
