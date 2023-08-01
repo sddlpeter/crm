@@ -15,7 +15,36 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript">
+	//入口函数，当整个页面加载完成之后，自动执行
+	$(function(){
 
+		// 给"阶段"下拉菜单添加change事件
+		$("#create-transactionStage").change(function(){
+			// alert($(this).find("option:selected").text());
+			var stageValue=$("#create-transactionStage option:selected").text();
+
+			if (stageValue==""){
+				$("#create-possibility").val("");
+				return;
+			}
+
+			// 发送请求
+			$.ajax({
+				url:'workbench/transaction/getPossibilityByStage.do',
+				data:{
+					stageValue:stageValue
+				},
+				type:'post',
+				dataType:'json',
+				success:function(data){
+					$("#create-possibility").val(data);
+				}
+			});
+		});
+	});
+
+</script>
 </head>
 <body>
 
@@ -182,7 +211,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			</div>
 			<label for="create-possibility" class="col-sm-2 control-label">可能性</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-possibility">
+				<input type="text" class="form-control" id="create-possibility" readonly>
 			</div>
 		</div>
 		
