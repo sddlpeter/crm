@@ -6,7 +6,13 @@ import com.powernode.crm.settings.domain.DicValue;
 import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.settings.service.DicValueService;
 import com.powernode.crm.settings.service.UserService;
+import com.powernode.crm.workbench.domain.Tran;
+import com.powernode.crm.workbench.domain.TranHistory;
+import com.powernode.crm.workbench.domain.TranRemark;
+import com.powernode.crm.workbench.mapper.TranHistoryMapper;
 import com.powernode.crm.workbench.service.CustomerService;
+import com.powernode.crm.workbench.service.TranHistoryService;
+import com.powernode.crm.workbench.service.TranRemarkService;
 import com.powernode.crm.workbench.service.TranService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +41,12 @@ public class TranController {
 
     @Autowired
     TranService tranService;
+
+    @Autowired
+    TranRemarkService tranRemarkService;
+
+    @Autowired
+    TranHistoryService tranHistoryService;
 
     @RequestMapping("/workbench/transaction/index.do")
     public String index(HttpServletRequest request){
@@ -96,5 +108,19 @@ public class TranController {
             returnObject.setMessage("系统忙，请稍后再试");
         }
         return returnObject;
+    }
+
+
+    @RequestMapping("/workbench/transaction/detailTran.do")
+    public String detailTran(String id, HttpServletRequest request){
+        Tran tran = tranService.queryTranForDetailById(id);
+        List<TranRemark> remarkList = tranRemarkService.queryTranRemarkForDetailByTranId(id);
+        List<TranHistory> historyList = tranHistoryService.queryTranHistoryForDetailByTranId(id);
+
+        request.setAttribute("tran", tran);
+        request.setAttribute("remarkList", remarkList);
+        request.setAttribute("historyList", historyList);
+
+        return "workbench/transaction/detail";
     }
 }

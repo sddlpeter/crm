@@ -6,7 +6,9 @@ import com.powernode.crm.commons.utils.UUIDUtils;
 import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.workbench.domain.Customer;
 import com.powernode.crm.workbench.domain.Tran;
+import com.powernode.crm.workbench.domain.TranHistory;
 import com.powernode.crm.workbench.mapper.CustomerMapper;
+import com.powernode.crm.workbench.mapper.TranHistoryMapper;
 import com.powernode.crm.workbench.mapper.TranMapper;
 import com.powernode.crm.workbench.service.TranService;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -24,6 +26,9 @@ public class TranServiceImpl implements TranService {
 
     @Autowired
     TranMapper tranMapper;
+
+    @Autowired
+    TranHistoryMapper tranHistoryMapper;
 
     @Override
     public void saveCreateTran(Map<String, Object> map) {
@@ -62,5 +67,20 @@ public class TranServiceImpl implements TranService {
         tranMapper.insertTran(tran);
 
 
+        // 保存交易历史
+        TranHistory tranHistory = new TranHistory();
+        tranHistory.setCreateBy(user.getId());
+        tranHistory.setCreateTime(DateUtils.formatDateTime(new Date()));
+        tranHistory.setExpectedDate(tran.getExpectedDate());
+        tranHistory.setId(UUIDUtils.getUUID());
+        tranHistory.setMoney(tran.getMoney());
+        tranHistory.setStage(tran.getStage());
+        tranHistory.setTranId(tran.getId());
+        tranHistoryMapper.insertTranHistory(tranHistory);
+    }
+
+    @Override
+    public Tran queryTranForDetailById(String id) {
+        return tranMapper.selectTranForDetailById(id);
     }
 }
