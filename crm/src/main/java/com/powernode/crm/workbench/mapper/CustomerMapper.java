@@ -56,4 +56,6 @@ public interface CustomerMapper {
     int insertCustomer(Customer customer);
 
     List<String> selectCustomerNameByName(String name);
+
+    Customer selectCustomerByName(String name);
 }

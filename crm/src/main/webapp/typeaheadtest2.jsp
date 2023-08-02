@@ -25,7 +25,7 @@
                                                     // jquery 就是要查询的关键字
                     // var customerName=$("#CustomerName").val();
                     $.ajax({
-                        url: 'workbench/transaction/queryAllCustomerName.do',
+                        url: 'workbench/transaction/queryCustomerNameByName.do',
                         data:{
                             customerName:jquery
                         },
