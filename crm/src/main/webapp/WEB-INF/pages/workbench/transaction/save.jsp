@@ -80,9 +80,10 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
             var contactSummary   =$.trim($("#create-contactSummary").val());
             var nextContactTime  =$("#create-nextContactTime").val();
 
+
             $.ajax({
                url:'workbench/transaction/saveCreateTran.do',
-               data:{
+                data:{
                    owner          :owner          ,
                    money          :money          ,
                    name           :name           ,

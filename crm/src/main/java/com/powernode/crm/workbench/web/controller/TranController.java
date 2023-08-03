@@ -94,7 +94,10 @@ public class TranController {
 
 
     @RequestMapping("/workbench/transaction/saveCreateTran.do")
-    public Object saveCreateTransaction(@RequestParam Map<String, Object> map, HttpSession session) {
+    @ResponseBody
+    public Object saveCreateTran(@RequestParam Map<String, Object> map, HttpSession session) {
+
+        System.out.println("================ saveCreateTran() invoked...  ===================");
         // 封装参数
         map.put(Constants.SESSION_USER, session.getAttribute(Constants.SESSION_USER));
 

@@ -5,6 +5,7 @@ import com.powernode.crm.commons.utils.DateUtils;
 import com.powernode.crm.commons.utils.UUIDUtils;
 import com.powernode.crm.settings.domain.User;
 import com.powernode.crm.workbench.domain.Customer;
+import com.powernode.crm.workbench.domain.FunnelVO;
 import com.powernode.crm.workbench.domain.Tran;
 import com.powernode.crm.workbench.domain.TranHistory;
 import com.powernode.crm.workbench.mapper.CustomerMapper;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service("tranService")
@@ -82,5 +84,10 @@ public class TranServiceImpl implements TranService {
     @Override
     public Tran queryTranForDetailById(String id) {
         return tranMapper.selectTranForDetailById(id);
+    }
+
+    @Override
+    public List<FunnelVO> queryCountOfTranGroupByStage() {
+        return tranMapper.selectCountOfTranGroupByStage();
     }
 }

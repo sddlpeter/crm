@@ -1,6 +1,9 @@
 package com.powernode.crm.workbench.mapper;
 
+import com.powernode.crm.workbench.domain.FunnelVO;
 import com.powernode.crm.workbench.domain.Tran;
+
+import java.util.List;
 
 public interface TranMapper {
     /**
@@ -54,4 +57,6 @@ public interface TranMapper {
     int insertTran(Tran tran);
 
     Tran selectTranForDetailById(String id);
+
+    List<FunnelVO> selectCountOfTranGroupByStage();
 }
