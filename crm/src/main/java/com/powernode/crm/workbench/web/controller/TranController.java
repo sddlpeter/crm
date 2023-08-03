@@ -112,14 +112,24 @@ public class TranController {
 
 
     @RequestMapping("/workbench/transaction/detailTran.do")
-    public String detailTran(String id, HttpServletRequest request){
+    public String detailTran(String id, HttpServletRequest request) throws Exception{
         Tran tran = tranService.queryTranForDetailById(id);
         List<TranRemark> remarkList = tranRemarkService.queryTranRemarkForDetailByTranId(id);
         List<TranHistory> historyList = tranHistoryService.queryTranHistoryForDetailByTranId(id);
 
+        ResourceBundle bundle = ResourceBundle.getBundle("possibility");
+        String possibility = new String(bundle.getString(tran.getStage()).getBytes("ISO-8859-1"), "UTF-8");
+
+        tran.setPossibility(possibility);
+
         request.setAttribute("tran", tran);
         request.setAttribute("remarkList", remarkList);
         request.setAttribute("historyList", historyList);
+
+        // 交易的所有阶段
+        List<DicValue> stageList = dicValueService.queryDicValueByTypeCode("stage");
+        request.setAttribute("stageList", stageList);
+
 
         return "workbench/transaction/detail";
     }

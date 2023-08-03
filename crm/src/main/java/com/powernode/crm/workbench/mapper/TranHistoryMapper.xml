@@ -166,5 +166,6 @@
         join tbl_dic_value dv on th.stage=dv.id
         join tbl_user u on th.create_by=u.id
         where th.tran_id=#{tranId}
+        order by th.create_time asc
     </select>
 </mapper>
